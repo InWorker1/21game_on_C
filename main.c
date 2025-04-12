@@ -28,59 +28,33 @@ int getch(void) {
 }
 
 void remch(char *str, int index) {
-    for (int i = index; str[i] != 0; i++) {
+    if (str == NULL || index < 0 || index >= strlen(str)) {
+        // Проверка на некорректные входные данные
+        return;
+    }
+    
+    // Сдвигаем все символы после индекса на одну позицию влево
+    for (int i = index; str[i] != '\0'; i++) {
         str[i] = str[i + 1];
     }
 }
 
-// char getcard(int b, char a, int *sum_pc, int *m, char cards) {
-    
-//     if (a == '2') {
-//             printf("Моя первая карта валет\n");
-//             *sum_pc += 2;
-//             *m-=1;
-//         }
-//     else if (a == '3') {
-//         printf("Моя первая карта дама\n");
-//         *sum_pc += 3;
-//         *m-=1;
-//     }
-//     else if (a == '4') {
-//         printf("Моя первая карта кароль\n");
-//         *sum_pc += 4;
-//         *m-=1;
-//     }
-//     else if (a == '1') {
-//         printf("Моя первая карта туз\n");
-//         *sum_pc += 11;
-//         *m-=1;
-//     }
-//     else {
-//         printf("Моя первая карта %c\n", cards[b]);
-//         *sum_pc += (int)*sum_pc;
-//         *m-=1;
-//     }
-// }
 
-char getcard(char a, int *sum, int *m) {
-    switch ((int)a) {
-            case 1: printf("туз\n"); break;
-            case 0: printf("10\n"); break;
-            case 2: printf("валет"); break;
-            case 3: printf("дама"); break;
-            case 4: printf("кароль"); break;
-            default: printf("%c", a); break;
+
+char getcard(char a, int *sum, int *b) {
+    // printf("\n in fuck -- %c, %d, %d, %d\n", a, *b, *sum, (int)a);
+    int cif = a - '0';
+    switch (cif) {
+            case 1: printf("туз\n"); *sum+=11; break;
+            case 0: printf("10\n"); *sum+=10; break;
+            case 2: printf("валет\n"); *sum+=cif; break;
+            case 3: printf("дама\n"); *sum+=cif; break;
+            case 4: printf("кароль\n"); *sum+=cif; break;
+            default: printf("%c\n", a); *sum+=cif;
         }
-    *m-=1;
-    if (a == '0') {
-        *sum+=10;
-    }
-    else if (a == '1') {
-        *sum+=11;
-    }
-    else {
-        *sum+=(int)a;
-    }
+    *b-=1;
+
+    return 0;
 }
 
 int random_int(int max) {
@@ -91,7 +65,8 @@ int random_int(int max) {
 int main(void)
 {
     int m = 35;
-    int sum_user = 0; int sum_pc = 0;
+    int sum_user = 0; 
+    int sum_pc = 0;
     
     char cards[] = "00003333444466667777888899991111";
     
@@ -103,36 +78,42 @@ int main(void)
 
     if (otv1 == 0) {
         printf("Я покажу свою карту и выдам тебе две карты. Ты сможешь выбрать между: оставить (< = >) или продолжить(<Enter>)\n");
+        
+
         int c = random_int(m);
         char card = cards[c];
         printf("Моя первая карта ");
-        // switch ((int)card) {
-        //     case 1: printf("туз\n"); break;
-        //     case 0: printf("10\n"); break;
-        //     case 2: printf("валет"); break;
-        //     case 3: printf("дама"); break;
-        //     case 4: printf("кароль"); break;
-        //     default: printf("%c", card); break;
-        // }
         getcard(card, &sum_pc, &m);
         remch(cards, card);
         
-        // getcard(c, card, &sum_pc, &m, *cards);
-        
-        
-        c = random_int(m);
-        card = cards[c];
         
         
         char otv2[20];
-        // getch();
-        // while ((otv[i] = getch()) != 10) {
-        //     putchar(otv2[0]);
-        // }
-        // printf("%c", cards[c]);
+        getch();
         while (getch() != '=') {
-            printf("f\n");
+            c = random_int(m);
+            card = cards[c];
+            printf("Твоя карта ");
+            getcard(card, &sum_user, &m);
+            printf("Сумма игрока: %d\n", sum_user);
+            remch(cards, card);
+            if (sum_user == 21) {
+                printf("YOU WIN");
+                return 0;
+            }
+            else if (sum_user > 21) {
+                printf("YOU LOSE");
+                return 0;
+            }
+            else {
+                continue;
+            }
         }
+        printf("моя вторая карта ");
+        getcard(card, &sum_pc, &m);
+        printf("Сумма банкира: %d\n", sum_pc);
+        remch(cards, card);
+        // if (sum_user )
     }
     else {
         printf("Ты видимо не из понятливых. Заново запускай и пиши да.");
