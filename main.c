@@ -28,15 +28,8 @@ int getch(void) {
 }
 
 void remch(char *str, int index) {
-    if (str == NULL || index < 0 || index >= strlen(str)) {
-        // Проверка на некорректные входные данные
-        return;
-    }
-    
-    // Сдвигаем все символы после индекса на одну позицию влево
-    for (int i = index; str[i] != '\0'; i++) {
-        str[i] = str[i + 1];
-    }
+    if (!str || index < 0 || index >= (int)strlen(str)) return;
+    memmove(&str[index], &str[index + 1], strlen(str) - index);
 }
 
 
