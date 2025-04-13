@@ -6,6 +6,23 @@
 #include <termios.h>
 #include <unistd.h>
 
+// Функция для вывода массива символов
+void print_array(const char *arr) {
+    // Проверка на NULL указатель
+    if (arr == NULL) {
+        printf("(NULL)\n");
+        return;
+    }
+    
+    // Поэлементный вывод до нуль-терминатора
+    int i = 0;
+    while (arr[i] != '\0') {
+        putchar(arr[i]);
+        i++;
+    }
+    putchar('\n'); // Переход на новую строку после вывода
+}
+
 int getch(void) {
     struct termios oldt, newt;
     int ch;
@@ -33,9 +50,21 @@ void remch(char *s, int index) {
 }
 
 
+int random_int(int max) {
+    // int min = 0;
+    // return min + arc4random_uniform(max - min + 1);
+    srand(time(NULL));
+    int a = rand() % (max + 1);
+    return a;
+}
 
-char getcard(char a, int *sum, int *b) {
+
+char getcard(char a, int *sum, int *b, char *cards) {
     // printf("\n in fuck -- %c, %d, %d, %d\n", a, *b, *sum, (int)a);
+    while (a == '.') {
+        int c = random_int(*b);
+        char a = cards[c];
+    }
     int cif = a - '0';
     switch (cif) {
             case 1: printf("туз\n"); *sum+=11; break;
@@ -50,13 +79,6 @@ char getcard(char a, int *sum, int *b) {
     return 0;
 }
 
-int random_int(int max) {
-    // int min = 0;
-    // return min + arc4random_uniform(max - min + 1);
-    srand(time(NULL));
-    int a = rand() % (max + 1);
-    return a;
-}
 
 int main(void)
 {
@@ -82,10 +104,10 @@ int main(void)
         
         printf("Моя первая карта ");
         
-        getcard(card, &sum_pc, &m);
-        remch(cards, c);
+        getcard(card, &sum_pc, &m, cards);
+        cards[c] = '.';
         
-        // printf("%s\n", cards);
+        print_array(cards);
         
         
         char otv2[20];
@@ -94,9 +116,9 @@ int main(void)
             c = random_int(m);
             card = cards[c];
             printf("Твоя карта ");
-            getcard(card, &sum_user, &m);
+            getcard(card, &sum_user, &m, cards);
             printf("Сумма игрока: %d\n", sum_user);
-            remch(cards, c);
+            cards[c] = '.';
             if (sum_user == 21) {
                 printf("YOU WIN");
                 return 0;
@@ -109,11 +131,29 @@ int main(void)
                 continue;
             }
         }
+        c = random_int(m);
+        card = cards[c];
         printf("моя вторая карта ");
-        getcard(card, &sum_pc, &m);
+        getcard(card, &sum_pc, &m, cards);
         printf("Сумма банкира: %d\n", sum_pc);
-        remch(cards, card);
-        // if (sum_user )
+        cards[c] = '.';
+        while (22 > sum_pc) {
+            if (sum_pc == 21) {
+                printf("HAHAHAHAHAH I WON, I ACTUALLY WON!");
+                return 0;
+            }
+            else if (sum_user < sum_pc) {
+                printf("I won");
+                return 0;
+            }
+            c = random_int(m);
+            card = cards[c];
+            printf("моя карта ");
+            getcard(card, &sum_pc, &m, cards);
+            printf("Сумма банкира: %d\n", sum_pc);
+            cards[c] = '.';
+        }
+        printf("i lose... see u later");
     }
     else {
         printf("Ты видимо не из понятливых. Заново запускай и пиши да.");
